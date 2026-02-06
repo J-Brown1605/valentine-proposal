@@ -137,4 +137,171 @@
                 transform: translateY(100vh) rotate(360deg);
             }
         }
-    </style
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="questionPage">
+            <h1>Will You Be My Valentine?</h1>
+            <div class="emoji">💘</div>
+            <div class="buttons">
+                <button id="yesBtn">Yes! 💕</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+
+        <div id="successPage" class="success-page">
+            <div class="celebration">🎉 🎊 💝 🎉 🎊</div>
+            <h1>YESSS! 🥳</h1>
+            <p style="font-size: 1.3em; margin: 20px 0; color: #e74c3c;">
+                You just made my day! Can't wait to spend Valentine's Day with you! 💖
+            </p>
+            <div class="celebration">✨ 💗 ✨</div>
+        </div>
+    </div>
+
+    <div class="hearts" id="hearts"></div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const questionPage = document.getElementById('questionPage');
+        const successPage = document.getElementById('successPage');
+        const heartsContainer = document.getElementById('hearts');
+        const container = document.querySelector('.buttons');
+
+        let dodgeCount = 0;
+        let currentX = 0;
+        let currentY = 0;
+
+        // Use requestAnimationFrame for smooth 60fps movement
+        let animationFrameId = null;
+
+        function dodgeButton(mouseX, mouseY) {
+            const noBtnRect = noBtn.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate button center
+            const btnCenterX = noBtnRect.left + noBtnRect.width / 2;
+            const btnCenterY = noBtnRect.top + noBtnRect.height / 2;
+            
+            // Calculate escape vector (opposite direction from mouse)
+            const deltaX = btnCenterX - mouseX;
+            const deltaY = btnCenterY - mouseY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (distance === 0) return;
+            
+            // Normalize and scale the escape direction
+            const escapeDistance = 150; // How far to jump
+            const normalizedX = (deltaX / distance) * escapeDistance;
+            const normalizedY = (deltaY / distance) * escapeDistance;
+            
+            // Calculate new position
+            currentX += normalizedX;
+            currentY += normalizedY;
+            
+            // Keep button within container bounds
+            const maxX = containerRect.width / 2 - noBtnRect.width / 2;
+            const maxY = containerRect.height / 2 - noBtnRect.height / 2;
+            
+            currentX = Math.max(-maxX, Math.min(maxX, currentX));
+            currentY = Math.max(-maxY, Math.min(maxY, currentY));
+            
+            // Apply transform (GPU accelerated, no lag)
+            noBtn.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            
+            dodgeCount++;
+            
+            // Taunt messages
+            if (dodgeCount === 3) {
+                noBtn.textContent = "Nope! 😏";
+            } else if (dodgeCount === 5) {
+                noBtn.textContent = "Nice try! 😎";
+            } else if (dodgeCount === 8) {
+                noBtn.textContent = "Too slow! ⚡";
+            } else if (dodgeCount === 12) {
+                noBtn.textContent = "Just say yes! 😅";
+            } else if (dodgeCount === 15) {
+                noBtn.textContent = "Giving up yet? 😈";
+            }
+        }
+
+        // Ultra smooth mouse tracking
+        document.addEventListener('mousemove', (e) => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            
+            animationFrameId = requestAnimationFrame(() => {
+                const noBtnRect = noBtn.getBoundingClientRect();
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+
+                // Detection radius
+                const detectionRadius = 120;
+
+                const btnCenterX = noBtnRect.left + noBtnRect.width / 2;
+                const btnCenterY = noBtnRect.top + noBtnRect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(mouseX - btnCenterX, 2) + 
+                    Math.pow(mouseY - btnCenterY, 2)
+                );
+
+                if (distance < detectionRadius) {
+                    dodgeButton(mouseX, mouseY);
+                }
+            });
+        });
+
+        // Mobile touch support
+        document.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const mouseX = touch.clientX;
+            const mouseY = touch.clientY;
+            
+            const noBtnRect = noBtn.getBoundingClientRect();
+            const btnCenterX = noBtnRect.left + noBtnRect.width / 2;
+            const btnCenterY = noBtnRect.top + noBtnRect.height / 2;
+            
+            const distance = Math.sqrt(
+                Math.pow(mouseX - btnCenterX, 2) + 
+                Math.pow(mouseY - btnCenterY, 2)
+            );
+
+            if (distance < 120) {
+                dodgeButton(mouseX, mouseY);
+            }
+        });
+
+        // Prevent click
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+        });
+
+        // Yes button action
+        yesBtn.addEventListener('click', () => {
+            questionPage.style.display = 'none';
+            successPage.classList.add('active');
+            createHearts();
+        });
+
+        // Create falling hearts animation
+        function createHearts() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = '💖';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 4000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
