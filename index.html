@@ -60,7 +60,7 @@
             justify-content: center;
             margin-top: 30px;
             position: relative;
-            min-height: 100px;
+            min-height: 150px;
         }
 
         button {
@@ -87,7 +87,8 @@
             background: #95a5a6;
             color: white;
             position: absolute;
-            transition: all 0.2s;
+            transition: all 0.05s ease-out;
+            pointer-events: auto;
         }
 
         .success-page {
@@ -167,24 +168,75 @@
         const questionPage = document.getElementById('questionPage');
         const successPage = document.getElementById('successPage');
         const heartsContainer = document.getElementById('hearts');
+        const container = document.querySelector('.buttons');
 
-        // Make the No button run away
-        noBtn.addEventListener('mouseenter', moveNoButton);
-        noBtn.addEventListener('click', moveNoButton);
+        let dodgeCount = 0;
 
-        function moveNoButton() {
-            const container = document.querySelector('.buttons');
+        // Ultra Instinct Mode - track mouse position constantly
+        document.addEventListener('mousemove', (e) => {
+            const noBtnRect = noBtn.getBoundingClientRect();
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            // Detection radius - button senses danger from 100px away
+            const detectionRadius = 100;
+
+            // Calculate distance from mouse to button center
+            const btnCenterX = noBtnRect.left + noBtnRect.width / 2;
+            const btnCenterY = noBtnRect.top + noBtnRect.height / 2;
+            
+            const distance = Math.sqrt(
+                Math.pow(mouseX - btnCenterX, 2) + 
+                Math.pow(mouseY - btnCenterY, 2)
+            );
+
+            // If mouse gets too close, DODGE!
+            if (distance < detectionRadius) {
+                dodgeButton();
+            }
+        });
+
+        // Also dodge on click attempt
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            dodgeButton();
+        });
+
+        function dodgeButton() {
+            dodgeCount++;
+            
             const containerRect = container.getBoundingClientRect();
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
             
-            // Random position within bounds
-            const maxX = containerRect.width - noBtn.offsetWidth;
-            const maxY = containerRect.height - noBtn.offsetHeight;
+            // Calculate safe zone boundaries
+            const maxX = containerRect.width - btnWidth;
+            const maxY = containerRect.height - btnHeight;
             
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
+            // Generate random position
+            let randomX, randomY;
+            let attempts = 0;
+            
+            // Keep trying until we find a position far from current spot
+            do {
+                randomX = Math.random() * maxX;
+                randomY = Math.random() * maxY;
+                attempts++;
+            } while (attempts < 5); // Give up after 5 tries to avoid infinite loop
             
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
+
+            // Taunt messages after multiple dodges
+            if (dodgeCount === 3) {
+                noBtn.textContent = "Nope! 😏";
+            } else if (dodgeCount === 5) {
+                noBtn.textContent = "Nice try! 😎";
+            } else if (dodgeCount === 8) {
+                noBtn.textContent = "Can't touch this! 🕺";
+            } else if (dodgeCount === 12) {
+                noBtn.textContent = "Just say yes! 😅";
+            }
         }
 
         // Yes button action
@@ -209,6 +261,5 @@
                 }, i * 100);
             }
         }
-    </script>
-</body>
-</html>
+
+        // Set initial ra
