@@ -69,13 +69,13 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s;
             font-weight: bold;
         }
 
         #yesBtn {
             background: #e74c3c;
             color: white;
+            transition: all 0.3s;
         }
 
         #yesBtn:hover {
@@ -87,8 +87,8 @@
             background: #95a5a6;
             color: white;
             position: absolute;
-            transition: all 0.05s ease-out;
-            pointer-events: auto;
+            will-change: transform;
+            transition: none;
         }
 
         .success-page {
@@ -137,129 +137,4 @@
                 transform: translateY(100vh) rotate(360deg);
             }
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div id="questionPage">
-            <h1>Will You Be My Valentine?</h1>
-            <div class="emoji">💘</div>
-            <div class="buttons">
-                <button id="yesBtn">Yes! 💕</button>
-                <button id="noBtn">No</button>
-            </div>
-        </div>
-
-        <div id="successPage" class="success-page">
-            <div class="celebration">🎉 🎊 💝 🎉 🎊</div>
-            <h1>YESSS! 🥳</h1>
-            <p style="font-size: 1.3em; margin: 20px 0; color: #e74c3c;">
-                You just made my day! Can't wait to spend Valentine's Day with you! 💖
-            </p>
-            <div class="celebration">✨ 💗 ✨</div>
-        </div>
-    </div>
-
-    <div class="hearts" id="hearts"></div>
-
-    <script>
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
-        const questionPage = document.getElementById('questionPage');
-        const successPage = document.getElementById('successPage');
-        const heartsContainer = document.getElementById('hearts');
-        const container = document.querySelector('.buttons');
-
-        let dodgeCount = 0;
-
-        // Ultra Instinct Mode - track mouse position constantly
-        document.addEventListener('mousemove', (e) => {
-            const noBtnRect = noBtn.getBoundingClientRect();
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            // Detection radius - button senses danger from 100px away
-            const detectionRadius = 100;
-
-            // Calculate distance from mouse to button center
-            const btnCenterX = noBtnRect.left + noBtnRect.width / 2;
-            const btnCenterY = noBtnRect.top + noBtnRect.height / 2;
-            
-            const distance = Math.sqrt(
-                Math.pow(mouseX - btnCenterX, 2) + 
-                Math.pow(mouseY - btnCenterY, 2)
-            );
-
-            // If mouse gets too close, DODGE!
-            if (distance < detectionRadius) {
-                dodgeButton();
-            }
-        });
-
-        // Also dodge on click attempt
-        noBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            dodgeButton();
-        });
-
-        function dodgeButton() {
-            dodgeCount++;
-            
-            const containerRect = container.getBoundingClientRect();
-            const btnWidth = noBtn.offsetWidth;
-            const btnHeight = noBtn.offsetHeight;
-            
-            // Calculate safe zone boundaries
-            const maxX = containerRect.width - btnWidth;
-            const maxY = containerRect.height - btnHeight;
-            
-            // Generate random position
-            let randomX, randomY;
-            let attempts = 0;
-            
-            // Keep trying until we find a position far from current spot
-            do {
-                randomX = Math.random() * maxX;
-                randomY = Math.random() * maxY;
-                attempts++;
-            } while (attempts < 5); // Give up after 5 tries to avoid infinite loop
-            
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
-
-            // Taunt messages after multiple dodges
-            if (dodgeCount === 3) {
-                noBtn.textContent = "Nope! 😏";
-            } else if (dodgeCount === 5) {
-                noBtn.textContent = "Nice try! 😎";
-            } else if (dodgeCount === 8) {
-                noBtn.textContent = "Can't touch this! 🕺";
-            } else if (dodgeCount === 12) {
-                noBtn.textContent = "Just say yes! 😅";
-            }
-        }
-
-        // Yes button action
-        yesBtn.addEventListener('click', () => {
-            questionPage.style.display = 'none';
-            successPage.classList.add('active');
-            createHearts();
-        });
-
-        // Create falling hearts animation
-        function createHearts() {
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.className = 'heart';
-                    heart.textContent = '💖';
-                    heart.style.left = Math.random() * 100 + '%';
-                    heart.style.animationDelay = Math.random() * 2 + 's';
-                    heartsContainer.appendChild(heart);
-                    
-                    setTimeout(() => heart.remove(), 4000);
-                }, i * 100);
-            }
-        }
-
-        // Set initial ra
+    </style
